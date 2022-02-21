@@ -64,6 +64,23 @@ class Client
     }
 
     /**
+     * List selling items
+     *
+     * @param array  $params
+     * @param string $filter
+     *
+     * @return string
+     *
+     * @throws RequestException
+     */
+    public function listSellingItems(array $params = [], string $filter = 'All'): string
+    {
+        $uri = "SellingItems/$filter.json";
+
+        return $this->api('GET', $uri, $params);
+    }
+
+    /**
      * General purpose method for sending API requests.
      *
      * @param $method

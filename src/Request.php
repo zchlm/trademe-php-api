@@ -2,10 +2,10 @@
 
 namespace JPCaparas\TradeMeAPI;
 
-use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
+use GuzzleHttp\Client as HttpClient;
 use JPCaparas\TradeMeAPI\Concerns\ValidatesRequired;
 use JPCaparas\TradeMeAPI\Exceptions\RequestException;
 
@@ -67,10 +67,10 @@ class Request
         // Handle OAuth requests seamlessly
         $oauthMiddleware = new OAuth1([
             'signature_method' => OAuth1::SIGNATURE_METHOD_PLAINTEXT,
-            'consumer_key' => $this->getOption('oauth.consumer_key'),
-            'consumer_secret' => $this->getOption('oauth.consumer_secret'),
-            'token' => $this->getOption('oauth.token'),
-            'token_secret' => $this->getOption('oauth.token_secret'),
+            'consumer_key'     => $this->getOption('oauth.consumer_key'),
+            'consumer_secret'  => $this->getOption('oauth.consumer_secret'),
+            'token'            => $this->getOption('oauth.token'),
+            'token_secret'     => $this->getOption('oauth.token_secret'),
         ]);
 
         $stack->push($oauthMiddleware);
@@ -78,7 +78,7 @@ class Request
         // Set the client for making HTTP requests
         $this->httpClient = $httpClient ?? new HttpClient([
                 'handler' => $stack,
-                'debug' => $this->debug
+                'debug'   => $this->debug
             ]);
     }
 
@@ -86,7 +86,7 @@ class Request
      * Gets an option value by its key. Supports dot notation (e.g. oauth.consumer_key)
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -99,8 +99,8 @@ class Request
      * Gets an array value by its key. Supports dot notation (e.g. oauth.consumer_key)
      *
      * @param string $key
-     * @param mixed $default
-     * @param array $data
+     * @param mixed  $default
+     * @param array  $data
      *
      * @return mixed
      */
@@ -135,8 +135,8 @@ class Request
      *
      * @param string $method
      * @param string $uri
-     * @param array $parameters
-     * @param array $headers
+     * @param array  $parameters
+     * @param array  $headers
      *
      * @return string
      *
@@ -170,9 +170,9 @@ class Request
      *
      * @param string $method
      * @param string $url
-     * @param array $parameters
-     * @param array $headers
-     * @param array $options
+     * @param array  $parameters
+     * @param array  $headers
+     * @param array  $options
      *
      * @return Response
      *
@@ -184,12 +184,20 @@ class Request
         array $parameters = [],
         array $headers = [],
         array $options = []
-    ): string
-    {
+    ): string {
         $defaultOptions = [
-            RequestOptions::JSON => $parameters,
             'headers' => $headers,
         ];
+
+        if ($method === 'POST') {
+            $defaultOptions = array_merge($defaultOptions, [
+                RequestOptions::JSON => $parameters,
+            ]);
+        } elseif ($method === 'GET') {
+            $defaultOptions = array_merge($defaultOptions, [
+                'query' => $parameters,
+            ]);
+        }
 
         $options = array_merge($defaultOptions, $options);
 
@@ -215,8 +223,8 @@ class Request
      *
      * @param string $method
      * @param string $uri
-     * @param array $parameters
-     * @param array $headers
+     * @param array  $parameters
+     * @param array  $headers
      *
      * @return string
      *

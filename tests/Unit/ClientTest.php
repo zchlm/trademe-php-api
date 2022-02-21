@@ -80,6 +80,27 @@ class ClientTest extends TestCase
     }
 
     /**
+     * @covers ::listSellingItems
+     */
+    public function testListSellingItems(): void
+    {
+        $request = $this->prophesize(Request::class);
+        $request->api(
+            "GET",
+            "SellingItems/All.json",
+            [
+                'photo_size' => ['Large']
+            ]
+        )->willReturn('banana');
+
+        $client = new Client([], $request->reveal());
+
+        $client->listSellingItems([
+            'photo_size' => ['Large']
+        ]);
+    }
+
+    /**
      * @covers ::api
      */
     public function testApi(): void
