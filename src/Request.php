@@ -62,7 +62,8 @@ class Request
         $this->debug = $this->getOption('debug', false);
         $this->sandbox = $this->getOption('sandbox', false);
 
-        $stack = HandlerStack::create();
+        /* @var $stack HandlerStack */
+        $stack = $this->getOption('stack', HandlerStack::create());
 
         // Handle OAuth requests seamlessly
         $oauthMiddleware = new OAuth1([
@@ -73,7 +74,7 @@ class Request
             'token_secret'     => $this->getOption('oauth.token_secret'),
         ]);
 
-        $stack->push($oauthMiddleware);
+        $stack->unshift($oauthMiddleware);
 
         // Set the client for making HTTP requests
         $this->httpClient = $httpClient ?? new HttpClient([
@@ -211,9 +212,7 @@ class Request
             }
         }
 
-        $body = $response->getBody();
-
-        $this->lastResponse = $body->getContents();
+        $this->lastResponse = (string) $response->getBody();
 
         return $this->lastResponse;
     }

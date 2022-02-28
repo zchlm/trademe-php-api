@@ -75,7 +75,7 @@ class Client
      */
     public function listSellingItems(array $params = [], string $filter = 'All'): string
     {
-        $uri = "SellingItems/$filter.json";
+        $uri = "MyTradeMe/SellingItems/$filter.json";
 
         return $this->api('GET', $uri, $params);
     }
